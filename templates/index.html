@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Educación Financiera con IA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+    /* Mejora visual para chatbot */
+    .chatbot-placeholder {
+      max-height: 300px;
+      overflow-y: auto;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h1>FinAI</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#articulos">Artículos</a></li>
+        <li><a href="#herramientas">Herramientas</a></li>
+        <li><a href="#info-section">Sección Informativa</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <h2>Educación Financiera Inteligente</h2>
+      <p>Aprende a administrar tu dinero y toma el control de tu futuro.</p>
+      <a class="cta-button" href="#articulos">Empezar</a>
+    </div>
+  </section>
+
+  <section class="articles" id="articulos">
+    <h2>Artículos Recomendados</h2>
+    <div class="article-list">
+      <article>
+        <h3>¿Por qué es importante el ahorro?</h3>
+        <p>Conoce las claves para fomentar hábitos de ahorro que te permitan alcanzar tus objetivos financieros.</p>
+        <a href="#" class="read-more">Leer más</a>
+      </article>
+      <article>
+        <h3>Inversiones básicas</h3>
+        <p>Aprende los conceptos fundamentales para dar tus primeros pasos en el mundo de la inversión.</p>
+        <a href="#" class="read-more">Leer más</a>
+      </article>
+      <article>
+        <h3>Presupuesto personal</h3>
+        <p>Descubre cómo elaborar un presupuesto y controlar tus gastos mensuales de manera eficiente.</p>
+        <a href="#" class="read-more">Leer más</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="tools" id="herramientas">
+    <h2>Herramientas Financieras</h2>
+    <div class="tools-content">
+      <p>Prueba nuestras calculadoras para presupuestos, inversiones y retiros.</p>
+      <a href="#" class="cta-button">Ver Herramientas</a>
+    </div>
+  </section>
+
+  <section class="chatbot-section">
+    <h2>Chatbot de IA</h2>
+    <p>Pregúntale lo que necesites sobre educación financiera.</p>
+    <div class="chatbot-container">
+      <div class="chatbot-placeholder" id="chat-messages">
+        <div class="message ai"><strong>Chatbot de IA:</strong> Hola, ¿en qué puedo ayudarte hoy?</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Escribe tu pregunta..." />
+      </div>
+      <div id="categoria-buttons" style="margin-top: 1rem;"></div>
+    </div>
+  </section>
+
+  <section class="info-section" id="info-section">
+    <h2>Sección Informativa</h2>
+    <div class="accordion-container">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <h3>Transformando la Educación Financiera con Inteligencia Artificial</h3>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-content">
+          <p>
+            La IA está cambiando la forma en que aprendemos sobre finanzas personales, facilitando análisis de datos y ofreciendo asesoría personalizada.
+          </p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <h3>Herramientas de IA para Optimizar Tus Finanzas Personales</h3>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-content">
+          <p>
+            Existen aplicaciones que utilizan algoritmos inteligentes para categorizar gastos y recomendar inversiones.
+          </p>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <h3>Cómo Empezar a Usar IA en Tu Educación Financiera</h3>
+          <span class="accordion-icon">+</span>
+        </div>
+        <div class="accordion-content">
+          <p>
+            El primer paso es identificar tus metas: ahorrar, invertir o planificar tu jubilación. Luego, elige apps que te ayuden a lograrlas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 FinAI. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const chat = document.getElementById("chat-messages");
+      const input = document.getElementById("user-input");
+      const categoriaDiv = document.getElementById("categoria-buttons");
+      let ultimaPreguntaPendiente = "";
+
+      function appendMessage(text, sender) {
+        const msg = document.createElement("div");
+        msg.className = "message " + sender;
+        msg.innerHTML = `<strong>${sender === "user" ? "Tú" : "IA"}:</strong> ${text}`;
+        chat.appendChild(msg);
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      async function enviarMensaje() {
+        const userText = input.value.trim();
+        if (!userText) return;
+
+        appendMessage(userText, "user");
+        input.value = "";
+        categoriaDiv.innerHTML = "";
+
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userText }),
+        });
+
+        const data = await res.json();
+        appendMessage(data.reply, "ai");
+
+        if (data.pendiente) {
+          ultimaPreguntaPendiente = userText;
+          const categorias = ["ahorro", "afp", "deuda", "inversion", "presupuesto"];
+          categoriaDiv.innerHTML = "<p><strong>¿A qué categoría pertenece esta pregunta?</strong></p>";
+
+          categorias.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+            btn.onclick = async () => {
+              const validarRes = await fetch("/validar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pregunta: ultimaPreguntaPendiente, categoria: cat })
+              });
+              const r = await validarRes.json();
+              appendMessage(r.reply, "ai");
+              categoriaDiv.innerHTML = "";
+            };
+            btn.style.margin = "0.3rem";
+            categoriaDiv.appendChild(btn);
+          });
+        }
+      }
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          enviarMensaje();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
