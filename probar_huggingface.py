@@ -43,6 +43,16 @@ respuestas_directas = {
     "quien te creo": "Fui creada por Hiver Leonardo Ponce Contreras y Niwell Gonzalo Quispe Lingán."
 }
 
+# Función para verificar si el tema es financiero
+def es_pregunta_financiera(texto):
+    temas_clave = [
+        "ahorro", "finanzas", "dinero", "presupuesto", "gasto", "ingreso", "afp",
+        "cts", "interés", "préstamo", "tarjeta", "crédito", "débito", "deuda",
+        "educación financiera", "inversión", "banco", "ahorrar", "impuesto", "plan financiero",
+        "economía personal", "morosidad", "historial crediticio", "billetera digital", "yape", "plin"
+    ]
+    return any(palabra in texto.lower() for palabra in temas_clave)
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -57,14 +67,21 @@ def chat():
         if frase in user_input:
             return jsonify({"reply": respuesta, "tiempo": 0})
 
+    # Verificar si la pregunta es de tema financiero
+    if not es_pregunta_financiera(user_input):
+        return jsonify({
+            "reply": "Solo puedo responder preguntas relacionadas con educación financiera en Perú. Por favor, reformula tu consulta.",
+            "tiempo": 0
+        })
+
     # Preparar prompt
     prompt = historial + f"Usuario: {user_input}\nAsistente:"
     inicio = time.time()
 
-    # Generar respuesta breve
+    # Generar respuesta
     respuesta = llm(
         prompt,
-        max_tokens=80,  # ⏱️ Respuestas cortas y rápidas
+        max_tokens=80,
         temperature=0.2,
         top_p=0.9,
         stop=["Usuario:", "Asistente:"]
@@ -73,11 +90,11 @@ def chat():
     tiempo = round(time.time() - inicio, 2)
     texto = respuesta["choices"][0]["text"].strip()
 
-    # Truncar si se pasa del límite visual
+    # Truncar si excede
     if len(texto) > 350:
         texto = texto[:350].rsplit(".", 1)[0] + "."
 
-    # Añadir al historial
+    # Agregar al historial
     historial += f"Usuario: {user_input}\nAsistente: {texto}\n"
 
     # Limpiar historial si es muy largo
