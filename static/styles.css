@@ -287,8 +287,8 @@ footer {
   border: 1px dashed #ccc;
   padding: 1rem;
   border-radius: 0.5rem;
-  max-height: 300px;         /* Tamaño máximo visible */
-  overflow-y: auto;          /* Scroll vertical si es necesario */
-  white-space: pre-wrap;     /* Respeta saltos de línea */
-  word-wrap: break-word;     /* Divide palabras largas */
+  overflow-y: auto;           /* Scroll vertical si el contenido excede */
+  white-space: pre-wrap;      /* Respeta saltos de línea */
+  word-wrap: break-word;      /* Divide palabras largas */
+  min-height: 150px;          /* Altura mínima para el contenedor */
 }
